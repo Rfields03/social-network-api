@@ -1,16 +1,12 @@
 {
-  "dependencies": {
-    "express": "^4.17.3",
-    "mongoose": "^6.2.7"
-  },
-  "scripts": {
-    "start": "node server.js"
-  },
   "name": "social-network-api",
   "description": "API for a social network web application where users can share their thoughts, react to friends’ thoughts, and create a friend list. You’ll use Express.js for routing, a MongoDB database, and the Mongoose ODM.",
   "version": "1.0.0",
   "main": "server.js",
-  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Rfields03/social-network-api.git"
@@ -20,5 +16,11 @@
   "bugs": {
     "url": "https://github.com/Rfields03/social-network-api/issues"
   },
-  "homepage": "https://github.com/Rfields03/social-network-api#readme"
+  "homepage": "https://github.com/Rfields03/social-network-api#readme",
+  "dependencies": {
+    "express": "^4.17.3",
+    "moment": "^2.29.1",
+    "mongoose": "^6.2.7",
+    "nodemon": "^2.0.15"
+  }
 }
