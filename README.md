@@ -29,6 +29,4 @@ To run this application, run: npm start to use on a local server 3001 after clon
 
 - Heroku Link: https://social-network-api2.herokuapp.com/
 
-- Working with TA on same issue from another Assignment.  I keep receiving a 404 we are running out of time to solve.
-
-[Error](./image%20(2).png)
+- I have to come back for the GET/POST routes and Demo video.
