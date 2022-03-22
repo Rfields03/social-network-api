@@ -1,10 +1,10 @@
 {
   "name": "social-network-api",
   "version": "1.0.0",
-  "description": "API for a social network web application where users can share their thoughts, react to friends’ thoughts, and create a friend list. You’ll use Express.js for routing, a MongoDB database, and the Mongoose ODM.",
+  "private": true,
+  "description": "API for a social network web application where users can share their thoughts, react to friends thoughts, and create a friend list. Youll use Express.js for routing, a MongoDB database, and the Mongoose ODM.",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js"
   },
   "repository": {
