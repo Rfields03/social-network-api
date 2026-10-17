@@ -1,5 +1,6 @@
 const {
-  User
+  User,
+  Thought
 } = require('../models');
 
 const userController = {
@@ -91,39 +92,30 @@ const userController = {
                   res.status(404).json({
                       message: 'No user found with this id.'
                   });
-                  return;
+                  return null;
               }
-              return dbUserData;
-          })
-          .then(dbUserData => {
-              User.updateMany({
+              return Promise.all([
+                  User.updateMany({
                       _id: {
                           $in: dbUserData.friends
                       }
                   }, {
                       $pull: {
-                          friends: params.userId
+                          friends: dbUserData._id
                       }
+                  }),
+                  Thought.deleteMany({
+                      username: dbUserData.username
                   })
-                  .then(() => {
-                      //deletes user's thought associated with id
-                      Thought.deleteMany({
-                              username: dbUserData.username
-                          })
-                          .then(() => {
-                              res.json({
-                                  message: 'User deleted successfully'
-                              });
-                          })
-                          .catch(err => {
-                              console.log(err);
-                              res.status(400).json(err);
-                          })
-                  })
-                  .catch(err => {
-                      console.log(err);
-                      res.status(400).json(err);
-                  })
+              ]);
+          })
+          .then(cleanupResults => {
+              if (!cleanupResults) {
+                  return;
+              }
+              res.json({
+                  message: 'User deleted successfully'
+              });
           })
           .catch(err => {
               console.log(err);
@@ -138,7 +130,7 @@ const userController = {
       User.findOneAndUpdate({
               _id: params.userId
           }, {
-              $push: {
+              $addToSet: {
                   friends: params.friendId
               }
           }, {
@@ -163,35 +155,24 @@ const userController = {
   removefromFriendList({
       params
   }, res) {
-      User.findOneAndDelete({
-              _id: params.thoghtId
-          })
-          .then(deletedFriend => {
-              if (!deletedFriend) {
-                  return res.status(404).json({
-                      message: 'No friend found with this id.'
-                  })
-              }
-              return User.findOneAndUpdate({
+      User.findOneAndUpdate({
+              _id: params.userId
+          }, {
+              $pull: {
                   friends: params.friendId
-              }, {
-                  $pull: {
-                      friends: params.friendId
-                  }
-              }, {
-                  new: true
-              });
+              }
+          }, {
+              new: true
           })
           .then(dbUserData => {
               if (!dbUserData) {
-                  res.status(404).json({
-                      message: 'No friend found with this id.'
-                  })
-                  return;
+                  return res.status(404).json({
+                      message: 'No user found with this id.'
+                  });
               }
               res.json(dbUserData);
           })
-          .catch(err => res.json(err));
+          .catch(err => res.status(400).json(err));
   },
 };
 
