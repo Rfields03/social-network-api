@@ -1,4 +1,7 @@
 const {
+  Types
+} = require('mongoose');
+const {
   Thought,
   User
 } = require('../models');
@@ -44,7 +47,13 @@ const thoughtController = {
   addThought({
       body
   }, res) {
-      User.findById(body.userId)
+      if (typeof body.userId !== 'string' || !Types.ObjectId.isValid(body.userId)) {
+          return res.status(400).json({
+              message: 'A valid user id is required.'
+          });
+      }
+      const userId = new Types.ObjectId(body.userId);
+      User.findById(userId)
           .then(user => {
               if (!user) {
                   return res.status(404).json({
