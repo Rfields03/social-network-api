@@ -96,9 +96,7 @@ const userController = {
               }
               return Promise.all([
                   User.updateMany({
-                      _id: {
-                          $in: dbUserData.friends
-                      }
+                      friends: dbUserData._id
                   }, {
                       $pull: {
                           friends: dbUserData._id
