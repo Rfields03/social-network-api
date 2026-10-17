@@ -4,7 +4,7 @@ const {
   Types
 } = require('mongoose');
 const moment = require('moment');
-const reactionSchema = require('./Reaction');
+const reactionSchema = require('./reaction');
 
 const ThoughtSchema = new Schema(
   {

@@ -1,4 +1,7 @@
 const {
+  Types
+} = require('mongoose');
+const {
   Thought,
   User
 } = require('../models');
@@ -19,7 +22,7 @@ const thoughtController = {
       params
   }, res) {
       Thought.findOne({
-              _id: params.id
+              _id: params.thoughtId
           })
           .select('-__v')
           .sort({
@@ -44,29 +47,38 @@ const thoughtController = {
   addThought({
       body
   }, res) {
-      Thought.create(body)
-          .then((ThoughtData) => {
-              return User.findOneAndUpdate(
-                  //create a thought using current user
-                  {
-                      _id: body.userId
+      if (typeof body.userId !== 'string' || !Types.ObjectId.isValid(body.userId)) {
+          return res.status(400).json({
+              message: 'A valid user id is required.'
+          });
+      }
+      const userId = new Types.ObjectId(body.userId);
+      User.findById(userId)
+          .then(user => {
+              if (!user) {
+                  return res.status(404).json({
+                      message: 'No user found with this id.'
+                  });
+              }
+              return Thought.create(body)
+                  .then(thought => User.findOneAndUpdate({
+                      _id: user._id
                   }, {
                       $addToSet: {
-                          thoughts: ThoughtData._id
+                          thoughts: thought._id
                       }
                   }, {
                       new: true
-                  }
-              );
-          })
-          .then(dbUsersData => {
-              if (!dbUsersData) {
-                  res.status(404).json({
-                      message: 'No user found id.'
-                  });
-                  return;
-              }
-              res.json(dbUsersData)
+                  }).then(updatedUser => {
+                      if (!updatedUser) {
+                          return Thought.deleteOne({
+                              _id: thought._id
+                          }).then(() => res.status(404).json({
+                              message: 'No user found with this id.'
+                          }));
+                      }
+                      res.json(updatedUser);
+                  }));
           })
           .catch(err => {
               console.log(err);
@@ -109,9 +121,10 @@ const thoughtController = {
           })
           .then(deletedThought => {
               if (!deletedThought) {
-                  return res.status(404).json({
+                  res.status(404).json({
                       message: 'No thought with this id!'
                   });
+                  return null;
               }
               return User.findOneAndUpdate({
                   thoughts: params.thoughtId
@@ -124,6 +137,9 @@ const thoughtController = {
               });
           })
           .then(dbUserData => {
+              if (dbUserData === null) {
+                  return;
+              }
               if (!dbUserData) {
                   res.status(404).json({
                       message: 'No thought found with this id!'
